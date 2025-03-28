@@ -1,0 +1,117 @@
+﻿@model List<OrderItem>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Summary</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/payment.css">
+</head>
+@{
+    var totalsum = 0;
+}
+@{
+    var processedOrders = new HashSet<int>(); // i used here hashset as it save value only one time don't allow redundancy
+}
+<body>
+    @foreach (var item in Model)
+    {
+        <form method="post" action="/admin/Order/ShipAllOrders">
+            <input type="hidden" name="OrderId" value="@item.order.Id">
+
+            <div class="container">
+                <h4 class="mb-3">ORDER DETAILS:</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Order Name:</strong> <input type="text" class="form-control" value="@item.product.Name"></p>
+                        <p><strong>Date:</strong> <input type="text" class="form-control" value="@item.order.orderdate"></p>
+                        <p><strong>Carrier:</strong>
+                            <input name="carrier" type="text" class="form-control" asp-for="@item.order.carrier"></p>
+                                <span asp-validation-for="@item.order.carrier" class="text-danger"></span>
+                        <p><strong>Delivery Number :</strong>
+                            <input name="deliveryNumber" type="text" class="form-control" asp-for="@item.order.TrackingNumber"></p>
+                        <span asp-validation-for="@item.order.TrackingNumber" class="text-danger"></span>
+
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Total:</strong> <input type="text" class="form-control" value="@item.order.ordertotal"></p>
+                        <p><strong>Quantity:</strong> <input type="text" class="form-control" value="@item.Count"></p>
+                    </div>
+                </div>
+
+                <h4 class="mt-4">ORDER SUMMARY</h4>
+                <a href="/admin/Order/statustransform?OrderId=@item.order.Id" class="order-status btn mb-3">ORDER STATUS - @item.order.status</a>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>@item.product.Name</span>
+                        <span>@item.price</span>
+                    </li> 
+                </ul>
+            </div>
+            @{
+                totalsum = (int)item.order.ordertotal;
+            }
+
+            <div class="total">TOTAL: @totalsum</div>
+
+            @if (!processedOrders.Contains(item.order.Id))
+            {
+                <div class="d-flex justify-content-between mt-3">
+                    @if (item.order.ordershippedstatus == E_Commerce_Project.Enums.ShippingStatus.canceled)
+                    {
+                        <button type="button" class="btn btn-secondary" disabled>ORDER CANCELED</button>
+                    }
+                    else if (item.order.ordershippedstatus == E_Commerce_Project.Enums.ShippingStatus.Waiting)
+                    {
+                        <button type="submit" class="btn btn-dark">Waiting To Ship</button>
+                    }
+                    else if (item.order.ordershippedstatus == E_Commerce_Project.Enums.ShippingStatus.Shipped)
+                    {
+                        <button type="submit" class="btn btn-dark">Order Shipped</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-secondary" disabled>ARRIVED</button>
+                    }
+
+                    @if (item.order.ordershippedstatus != E_Commerce_Project.Enums.ShippingStatus.Arrived)
+                    {
+                        <button type="submit" class="btn btn-danger" formaction="/admin/Order/CancelOrder?OrderId=@item.order.Id">CANCEL ORDER</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-danger" disabled>CANCEL ORDER</button>
+                    }
+                </div>
+                processedOrders.Add(item.order.Id);
+            }
+        </form>
+    }
+</body>
+</html>
+@section Scripts{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll("form").forEach(function (form) {
+                form.addEventListener("submit", function (event) {
+                    let carrierInput = form.querySelector("input[name='carrier']");
+                    let trackingInput = form.querySelector("input[name='deliveryNumber']");
+
+                    if (!carrierInput.value.trim() || !trackingInput.value.trim()) {
+                        event.preventDefault(); // منع إرسال النموذج
+
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "you Must Enter carrier and Delivery Man Number First",
+                            confirmButtonText: "Okay"
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+}

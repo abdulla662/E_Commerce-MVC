@@ -1,0 +1,39 @@
+﻿@model Company
+<div class="container my-3">
+    <div class="row my-3">
+        <!-- Title and Create New Button on the Same Line -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h2 class="mb-0">create Company</h2>
+        </div>
+
+
+        <form asp-action="create" asp-controller="Company" method="post">
+             <div class="mb-3">
+                 <label asp-for="Name" class="form-label">Company Name</label>
+                 <input asp-for="Name"  class="form-control">
+                 <span class="text-danger" asp-validation-for="Name"></span>
+             </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Company Description</label>
+                <input asp-for="Description" class="form-control">
+                <span class="text-danger" asp-validation-for="Description"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="scale" class="form-label">Company scale</label>
+                <input asp-for="scale" class="form-control">
+                <span class="text-danger" asp-validation-for="scale"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+
+
+
+        </form>
+    </div>
+    @section scripts{
+
+        <partial name="_ValidationScriptPartial.cshtml">
+
+
+
+
+    }

@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@section scripts{
+    @if (@TempData["Notification"] != null)
+    
+    {
+        <script>
+            toastr.success('@TempData["Notification"]')
+        </script>
+    }
+}
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Shop in style</h1>
+            <p class="lead fw-normal text-white-50 mb-0">With this shop homepage template</p>
+        </div>
+    </div>
+</header>
+
+<!-- Filter Section -->
+<section class="container my-4">
+    <form method="get" action="@Url.Action("Index", "Home")">
+        <div class="row g-3 align-items-end">
+            <!-- Category Dropdown -->
+            <div class="col-md-3">
+                <label for="category" class="form-label">Category</label>
+                <select name="CategoryName" class="form-select">
+                    <option value="">All Categories</option>
+                    @foreach (var item in ((List<Category>)ViewData["Categories"]).Select(c => c.Name))
+                    {
+                        <option  value="@item">@item</option>
+                    }
+                   
+                </select>
+            </div>
+
+            <!-- Search Input -->
+            <div class="col-md-3">
+                <label for="search" class="form-label">Search</label>
+                <input type="text" name="Pname" class="form-control" placeholder="Search by name">
+            </div>
+
+            <!-- Price Range -->
+            <div class="col-md-2">
+                <label for="minPrice" class="form-label">Min Price</label>
+                <input type="number" name="minPrice" class="form-control" placeholder="Min">
+            </div>
+            <div class="col-md-2">
+                <label for="maxPrice" class="form-label">Max Price</label>
+                <input type="number" name="maxPrice" class="form-control" placeholder="Max">
+            </div>
+
+            <!-- Rating Dropdown -->
+            <div class="col-md-2">
+                <label for="rating" class="form-label">Min Rating</label>
+                <select name="rating" class="form-select">
+                    <option value="">Any</option>
+                    <option value="1">1 Star & Up</option>
+                    <option value="2">2 Stars & Up</option>
+                    <option value="3">3 Stars & Up</option>
+                    <option value="4">4 Stars & Up</option>
+                    <option value="5">5 Stars</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </div>
+    </form>
+</section>
+
+<!-- Product Display Section -->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            @foreach (var item in Model)
+            {
+                <div class="col mb-5 text-black">
+                    <div class="card h-100">
+                        <!-- Category Badge -->
+                        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">@item.Category.Name</div>
+                        <!-- dis Badge -->
+                        @if (item?.Discount != null && item.Discount >= 0.15m)
+                        {
+                            <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; left: 0.15rem">Hot</div>
+
+                        }
+                           
+                        <!-- Product Image -->
+                        <img class="card-img-top" src="~/images/@item.Img" alt="Product Image">
+
+                        <!-- Product Details -->
+                        <div class="card-body p-4">
+                            <div class="text-center">
+                                <h5 class="fw-bolder">@item.Name</h5>
+
+                                <!-- Product Rating -->
+                                <div class="d-flex justify-content-center small text-warning mb-2">
+                                  
+                                </div>
+
+                                <!-- Product Price -->
+                                <span class="text-muted text-decoration-line-through"></span>
+                                @item.Price.ToString("C")
+                            </div>
+                        </div>
+
+                        <!-- Product Actions -->
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                            <div class="text-center">
+                                <a class="btn btn-outline-dark mt-auto" href="/Customer/Home/Details?ProductId=@item.Id">Show Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+

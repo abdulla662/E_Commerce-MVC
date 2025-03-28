@@ -1,0 +1,25 @@
+﻿@model Category
+
+<div class="container my-3">
+    <div class="row my-3">
+        <!-- Title and Create New Button on the Same Line -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h2 class="mb-0">Edit Category</h2>
+        </div>
+
+          
+        <form action="/Admin/Category/Edit" method="post">
+            <div class="form-group mb-3" >
+                <label for="exampleInputEmail1">Category Name</label>
+                <input type="hidden" name="CategoryId" value="@Model.Id" />
+                <input type="text" class="form-control mt-2" id="name" name="Name" value="@Model.Name">
+                <span asp-validation-for="Name" class="text-danger"></span>
+
+
+            </div>
+            <button type="submit" class="btn btn-primary" href="/Admin/Category">Save</button>
+
+       
+         
+        </form>
+</div>

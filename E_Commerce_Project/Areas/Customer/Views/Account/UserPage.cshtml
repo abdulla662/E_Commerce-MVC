@@ -1,0 +1,39 @@
+﻿@model E_Commerce_Project.Models.ViewModel.PersonalAccountVM
+
+    <head>
+        <link rel="stylesheet" href="~/css/Account.css" asp-append-version="true" />
+    </head>
+
+
+
+<div class="container mt-5">
+    <div class="card p-4 shadow-lg">
+        <h2 class="text-center mb-4">User Profile</h2>
+
+        <form asp-action="UserPage" method="post" enctype="multipart/form-data">
+            <div class="text-center">
+                <img src="@Url.Content(Model.ProfilePicture)" alt="Profile Picture" width="150" height="150" class="img-thumbnail" />
+                <input type="file" name="profileImage" class="form-control mt-2">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input asp-for="Username" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input asp-for="Email" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+                <input asp-for="Address" class="form-control">
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-success">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
