@@ -12,11 +12,11 @@ namespace E_Commerce_Project.Models
             {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential("worldtroidgaming@gmail.com", "hmlx apkn iapv ctid")
+                Credentials = new NetworkCredential("email@gmail.com", "password")
             };
 
             return client.SendMailAsync(
-                new MailMessage(from: "worldtroidgaming@gmail.com",
+                new MailMessage(from: "email@gmail.com",
                                 to: email,
                                 subject,
                                 message
