@@ -2,6 +2,7 @@
 using E_Commerce_Project.Models;
 using E_Commerce_Project.Repository;
 using E_Commerce_Project.Repository.Irepositories;
+using E_Commerce_Project.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +19,15 @@ namespace E_Commerce_Project.Areas.Customer.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderItemRepository _orderItemRepository;
+        private readonly IEmailSender _emailSender;
 
-        public OrderController(UserManager<ApplicationUser> userManager, IOrderRepository orderRepository, IOrderItemRepository orderITemRepository)
+
+        public OrderController(UserManager<ApplicationUser> userManager, IOrderRepository orderRepository, IOrderItemRepository orderITemRepository, IEmailSender emailsender)
         {
             this._userManager = userManager;
             this._orderRepository = orderRepository;
             this._orderItemRepository = orderITemRepository;
+            this._emailSender = emailsender;
         }
         public IActionResult Index()
         {
@@ -42,8 +46,8 @@ namespace E_Commerce_Project.Areas.Customer.Controllers
 
             return View(order.ToList());
         }
-        public IActionResult CancelOrder(int OrderId) {
-            var order = _orderRepository.GetOne(e => e.Id == OrderId);
+        public async Task<IActionResult>  CancelOrder(int OrderId) {
+            var order = _orderRepository.GetOne(e => e.Id == OrderId, includes: [e=> e.ApplicationUser]);
             if (order != null && order.PayementStripId != null)
             {
                 var service = new SessionService();
@@ -53,9 +57,13 @@ namespace E_Commerce_Project.Areas.Customer.Controllers
                     PaymentIntent = order.PayementStripId,
                     Amount = (long)order.ordertotal,
                     Reason = RefundReasons.RequestedByCustomer,
+
                 };
                 var refundservie = new RefundService();
                 var refundsession = refundservie.Create(refundoptions);
+                string subject = "Order Confirmation";
+                string message = $"Dear Customer, your order #{order.Id} has been Canceld successfully.";
+                await _emailSender.SendEmailAsync(order.ApplicationUser.Email, subject, message);
             }
             order.ordershippedstatus = (order.ordershippedstatus = ShippingStatus.canceled);
             order.status = OrderStatus.Canceled;

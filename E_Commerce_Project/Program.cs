@@ -4,8 +4,10 @@ using E_Commerce_Project.Repository;
 using E_Commerce_Project.Repository.Irepositories;
 using E_Commerce_Project.Utility;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Stripe;
+using IEmailSender = E_Commerce_Project.Utility.IEmailSender;
 
 namespace E_Commerce_Project
 {
@@ -17,6 +19,7 @@ namespace E_Commerce_Project
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
